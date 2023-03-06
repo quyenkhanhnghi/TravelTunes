@@ -6,16 +6,14 @@ const {
   getTour,
   updateTour,
   deleteTour,
-  checkId,
-  checkBody,
-} = require('../TravelTunes/controllers/tourController');
+} = require('../controllers/tourController');
 
 const tourRouter = express.Router();
 
-tourRouter.param('id', checkId);
+// eslint-disable-next-line prettier/prettier
+tourRouter.route('/').get(getAllTours).post(createTour);
 
-tourRouter.route('/').get(getAllTours).post(checkBody, createTour);
-
+// eslint-disable-next-line prettier/prettier
 tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 module.exports = tourRouter;

@@ -5,7 +5,7 @@ const {
   getUser,
   updateUser,
   deleteUser,
-} = require('../TravelTunes/controllers/userController');
+} = require('../controllers/userController');
 
 const userRouter = express.Router();
 
