@@ -3,7 +3,7 @@
 
 Travel Tunes is a web-based marketplace built using the MERN stack. 
 
-The platform allows consumers to research and book travel products and services directly with travel suppliers. 
+The platform allows consumers to research, review and book travel products and services directly with travel suppliers. 
 
 The project is currently in progress, with a focus on 
   - desgining API & RESTfulAPI using CRUD operations with Moogosh
