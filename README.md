@@ -19,7 +19,7 @@ In the future, the project will be updated with
 
 
 
-## API Reference
+## API Reference - still updated for users
 
 #### Get all tours
 
@@ -29,7 +29,7 @@ In the future, the project will be updated with
 
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
-| `tours` | `string` | **Required**.                |
+|no parameter | `string` | **Required**.                |
 
 #### Create new tour
 ```http
@@ -38,7 +38,7 @@ In the future, the project will be updated with
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `tours`      | `string` | **Required**.                  |
+|no parameter | `string` | **Required**.                  |
 
 #### Get tour
 
