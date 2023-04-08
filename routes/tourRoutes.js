@@ -1,6 +1,7 @@
 const express = require('express');
 
 const {
+  aliasTopTour,
   getAllTours,
   createTour,
   getTour,
@@ -10,10 +11,10 @@ const {
 
 const tourRouter = express.Router();
 
-// eslint-disable-next-line prettier/prettier
+tourRouter.route('/top-5-cheap').get(aliasTopTour, getAllTours);
+
 tourRouter.route('/').get(getAllTours).post(createTour);
 
-// eslint-disable-next-line prettier/prettier
 tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 module.exports = tourRouter;
