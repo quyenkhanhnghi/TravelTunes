@@ -2,6 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 const AppError = require('./utils/AppError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -16,6 +19,7 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
 // Limit requests from same API
 const limiter = rateLimit({
   max: 100,
@@ -23,21 +27,39 @@ const limiter = rateLimit({
   message: 'Too monay request. Please try again in an hour !',
 });
 app.use(limiter);
-app.use(express.json());
+
+// Limit the body data size
+app.use(express.json({ limit: '10kb' }));
+
+// Data sanitizing against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitizing against XSS
+app.use(xss());
+
+// Preventing Parameter Pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'price',
+      'difficulty',
+    ],
+  })
+);
+
+// Serving static file
 app.use(express.static(`${__dirname}/public`));
 
-// app.use((req, res, next) => {
-//   console.log('Hello middleware 1');
-//   next();
-// });
-
-// middleware
-// app.use((req, res, next) => {
-//   req.requestTime = new Date().toISOString();
-//   next();
-// });
-
 // 2 routes middleware
+// Test middleware
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 // 3 routes
 // Body parses, reading body into req.body
