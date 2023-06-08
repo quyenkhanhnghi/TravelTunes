@@ -7,7 +7,7 @@ const {
   createReview,
 } = require('../controllers/reviewController');
 
-const reviewRouter = express.Router();
+const reviewRouter = express.Router({ mergeParams: true });
 
 reviewRouter
   .route('/')

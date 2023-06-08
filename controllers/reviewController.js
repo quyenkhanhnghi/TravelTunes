@@ -2,8 +2,13 @@ const Review = require('../models/reviewModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 
+/**
+ * Get all review from a tour / all tours
+ */
 const getAllReview = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+  let filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId };
+  const reviews = await Review.find(filter);
   res.status(200).json({
     status: 'success',
     length: reviews.length,
@@ -24,8 +29,16 @@ const getReview = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * Create a new review from a login user
+ * login and restrict to current user at current tour
+ */
 const createReview = catchAsync(async (req, res, next) => {
-  const newReview = await Review.create(req.body);
+  req.body.tour ??= req.params.tourId;
+  const { id: user } = req.user;
+  // this user can change req.user
+  // if (!req.body.user) req.body.user = req.user.id;
+  const newReview = await Review.create({ ...req.body, user });
   res.status(201).json({
     status: 'sucess',
     data: {

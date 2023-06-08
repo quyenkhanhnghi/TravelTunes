@@ -11,8 +11,12 @@ const {
   getTourStats,
   getMonthlyPlan,
 } = require('../controllers/tourController');
+const reviewRouter = require('./reviewRoutes');
 
 const tourRouter = express.Router();
+
+// nested review route
+tourRouter.use('/:tourId/reviews', reviewRouter);
 
 tourRouter.route('/top-5-cheap').get(aliasTopTour, getAllTours);
 tourRouter.route('/tour-stats').get(getTourStats);
