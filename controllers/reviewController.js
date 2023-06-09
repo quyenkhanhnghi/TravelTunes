@@ -1,6 +1,7 @@
 const Review = require('../models/reviewModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const factory = require('./handleFactory');
 
 /**
  * Get all review from a tour / all tours
@@ -47,4 +48,21 @@ const createReview = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { getAllReview, getReview, createReview };
+/**
+ * Delete a review with current user or admin
+ */
+const deleteReview = catchAsync(async (req, res, next) => {
+  const review = await Review.findById(req.params.id);
+  if (req.user.id !== review.user.id) {
+    return next(
+      new AppError('You do not have permission to do this action', 404)
+    );
+  }
+});
+
+module.exports = {
+  getAllReview,
+  getReview,
+  createReview,
+  deleteReview,
+};

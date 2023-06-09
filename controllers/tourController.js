@@ -2,6 +2,7 @@ const Tour = require('../models/tourModel');
 const Features = require('../utils/apiFeature');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const factory = require('./handleFactory');
 
 const aliasTopTour = (req, res, next) => {
   req.query.limit = '5';
@@ -101,28 +102,33 @@ const updateTour = catchAsync(async (req, res, next) => {
   // }
 });
 
-const deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('Tour not found', 404));
-  }
-  res.status(204).json({
-    status: 'Sucessful delete',
-    data: null,
-  });
-  // if (!tour) {
-  //   return res.status(404).json({
-  //     status: 'error',
-  //     message: `Cannot find tour with id: ${req.params.id}`,
-  //   });
-  // }
-  // } catch (error) {
-  //   res.status(500).json({
-  //     status: 'Fail to delete tour',
-  //     message: error.message,
-  //   });
-  // }
-});
+/**
+ * Delete a tour based on id from parameters
+ */
+const deleteTour = factory.deleteOne(Tour);
+
+// const deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tour) {
+//     return next(new AppError('Tour not found', 404));
+//   }
+//   res.status(204).json({
+//     status: 'Sucessful delete',
+//     data: null,
+//   });
+// });
+// if (!tour) {
+//   return res.status(404).json({
+//     status: 'error',
+//     message: `Cannot find tour with id: ${req.params.id}`,
+//   });
+// }
+// } catch (error) {
+//   res.status(500).json({
+//     status: 'Fail to delete tour',
+//     message: error.message,
+//   });
+// }
 
 const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
