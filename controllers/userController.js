@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const factory = require('./handleFactory');
 
 const ObjectField = (obj, ...allowedFields) => {
   let newObj;
@@ -42,12 +43,7 @@ const updateUser = (req, res) => {
   });
 };
 
-const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Not yet defined',
-  });
-};
+const deleteUser = factory.deleteOne(User);
 
 // for user to update his personal information
 const updateMe = catchAsync(async (req, res, next) => {
@@ -72,6 +68,14 @@ const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -79,4 +83,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateMe,
+  deleteMe,
 };

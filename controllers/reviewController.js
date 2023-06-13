@@ -53,11 +53,16 @@ const createReview = catchAsync(async (req, res, next) => {
  */
 const deleteReview = catchAsync(async (req, res, next) => {
   const review = await Review.findById(req.params.id);
-  if (req.user.id !== review.user.id) {
+  if (req.user.id !== review.user._id.toString()) {
     return next(
       new AppError('You do not have permission to do this action', 404)
     );
   }
+  await Review.deleteOne(req.params._id);
+  res.status(204).json({
+    status: 'Sucessful delete',
+    data: null,
+  });
 });
 
 module.exports = {
