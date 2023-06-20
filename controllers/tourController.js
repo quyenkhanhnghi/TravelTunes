@@ -11,125 +11,69 @@ const aliasTopTour = (req, res, next) => {
   next();
 };
 
-const getAllTours = catchAsync(async (req, res, next) => {
-  // Execute query
-  const features = new Features(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .fields()
-    .paginate();
-  const tours = await features.query;
-  //  3. Send response
-  res.status(200).json({
-    status: 'success',
-    length: tours.length,
-    data: tours,
-  });
-  // } catch (error) {
-  //   res.status(400).json({
-  //     status: 'Fail to get all tours',
-  //     message: error.message,
-  //   });
-  // }
-});
-
-const createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-  // try {
-  //   const newTour = await Tour.create(req.body);
-  //   res.status(201).json({
-  //     status: 'success',
-  //     data: {
-  //       tour: newTour,
-  //     },
-  //   });
-  // } catch (error) {
-  //   res.status(400).json({
-  //     status: 'Fail to create tour',
-  //     message: error.message,
-  //   });
-  // }
-});
-
-const getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-  // same:
-  // Tour.findById({ _id: req.params.id })
-  if (!tour) {
-    return next(new AppError('Tour not found', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-  // } catch (error) {
-  //   res.status(400).json({
-  //     status: 'Fail to get tour',
-  //     message: error.message,
-  //   });
-  // }
-});
-
-const updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!tour) {
-    return next(new AppError('Tour not found', 404));
-  }
-
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      tour,
-    },
-  });
-  // } catch (error) {
-  //   res.status(404).json({
-  //     status: 'Fail to update tour',
-  //     message: error.message,
-  //   });
-  // }
-});
+/**
+ * Get all tours
+ * Authorization : Admin
+ */
+const getAllTours = factory.getAll(Tour);
+// const getAllTours = catchAsync(async (req, res, next) => {
+//   // Execute query
+//   const features = new Features(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .fields()
+//     .paginate();
+//   const tours = await features.query;
+//   //  3. Send response
+//   res.status(200).json({
+//     status: 'success',
+//     length: tours.length,
+//     data: tours,
+//   });
+// });
 
 /**
- * Delete a tour based on id from parameters
+ * Create a new tour
+ * Authorization: Admin
  */
-const deleteTour = factory.deleteOne(Tour);
 
-// const deleteTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findByIdAndDelete(req.params.id);
+const createTour = factory.createOne(Tour);
+
+/**
+ * Get a tour based on the Id
+ * Parse the populate object into factory function
+ */
+const getTour = factory.getOne(Tour, { path: 'reviews' });
+// const getTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findById(req.params.id).populate('reviews');
+//   // same:
+//   // Tour.findById({ _id: req.params.id })
 //   if (!tour) {
 //     return next(new AppError('Tour not found', 404));
 //   }
-//   res.status(204).json({
-//     status: 'Sucessful delete',
-//     data: null,
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour,
+//     },
 //   });
 // });
-// if (!tour) {
-//   return res.status(404).json({
-//     status: 'error',
-//     message: `Cannot find tour with id: ${req.params.id}`,
-//   });
-// }
-// } catch (error) {
-//   res.status(500).json({
-//     status: 'Fail to delete tour',
-//     message: error.message,
-//   });
-// }
 
+/**
+ * Update a tour based on the id of the parameter
+ * Authorization: Admin
+ */
+const updateTour = factory.updateOne(Tour);
+
+/**
+ * Delete a tour based on id from parameters
+ * Authorization: Admin
+ */
+const deleteTour = factory.deleteOne(Tour);
+
+/**
+ * Get a tour statistics based on dividing group about difficulty
+ */
 const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
@@ -160,12 +104,6 @@ const getTourStats = catchAsync(async (req, res, next) => {
       stats,
     },
   });
-  // } catch (err) {
-  //   res.status(404).json({
-  //     status: 'fail',
-  //     message: err.message,
-  //   });
-  // }
 });
 
 const getMonthlyPlan = catchAsync(async (req, res, next) => {
@@ -205,12 +143,6 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
       plan,
     },
   });
-  // } catch (err) {
-  //   res.status(404).json({
-  //     status: 'fail',
-  //     message: err.message,
-  //   });
-  // }
 });
 
 module.exports = {

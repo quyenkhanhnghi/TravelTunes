@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -32,20 +33,60 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-reviewSchema.pre(/^find/, function (next) {
-  // this.populate({
-  //   path: 'tour',
-  //   select: 'name',
-  // }).populate({
-  //   path: 'user',
-  //   select: 'name photo',
-  // });
+/**
+ * Preventing duplicate reviews from 1 user on a tour
+ */
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
+/**
+ * Populate the user information when query
+ */
+reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'user',
     select: 'name photo',
   });
   next();
+});
+
+// Aggregration middleware for count Average Rating on a tour
+reviewSchema.statics.calcAverageRating = async function (tourId) {
+  const statics = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: null,
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+    {
+      $project: { _id: 0 },
+    },
+  ]);
+  if (statics.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: statics[0].avgRating,
+      ratingsQuantity: statics[0].nRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: 4.5,
+      ratingsQuantity: 0,
+    });
+  }
+};
+
+// Use middeware to calculate average rating by function above
+reviewSchema.post('save', function () {
+  this.constructor.calcAverageRating(this.tour);
+});
+
+// Use middeware to calculate average rating by function if update or delete review
+reviewSchema.post(/^findOneAnd/, async (docs) => {
+  await docs.constructor.calcAverageRatings(docs.tour);
 });
 const Review = mongoose.model('Review', reviewSchema);
 

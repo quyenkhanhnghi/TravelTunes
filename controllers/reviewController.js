@@ -4,52 +4,40 @@ const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
 
 /**
- * Get all review from a tour / all tours
+ * Get all review from all tours
  */
-const getAllReview = catchAsync(async (req, res, next) => {
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-  const reviews = await Review.find(filter);
-  res.status(200).json({
-    status: 'success',
-    length: reviews.length,
-    data: reviews,
-  });
-});
+const getAllReview = factory.getAll(Review);
 
-const getReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findById(req.params.id);
-  if (!review) {
-    return next(new AppError('No review found', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      review,
-    },
-  });
-});
+/**
+ * Get a review based on review id
+ */
+const getReview = factory.getOne(Review);
+
+/**
+ * Set current Tour and current User ids before creating a new review
+ * @param {*} req
+ * @param {*} next
+ */
+const setTourUserIds = (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  // Make sure the user cannot change their id
+  req.body.user = req.user.id;
+  next();
+};
 
 /**
  * Create a new review from a login user
  * login and restrict to current user at current tour
  */
-const createReview = catchAsync(async (req, res, next) => {
-  req.body.tour ??= req.params.tourId;
-  const { id: user } = req.user;
-  // this user can change req.user
-  // if (!req.body.user) req.body.user = req.user.id;
-  const newReview = await Review.create({ ...req.body, user });
-  res.status(201).json({
-    status: 'sucess',
-    data: {
-      review: newReview,
-    },
-  });
-});
+const createReview = factory.createOne(Review);
 
 /**
+ * Update a review
+ */
+const updateReview = factory.updateOne(Review);
+/**
  * Delete a review with current user or admin
+ * Not use handleFactory because have to check same user
  */
 const deleteReview = catchAsync(async (req, res, next) => {
   const review = await Review.findById(req.params.id);
@@ -68,6 +56,8 @@ const deleteReview = catchAsync(async (req, res, next) => {
 module.exports = {
   getAllReview,
   getReview,
+  setTourUserIds,
   createReview,
+  updateReview,
   deleteReview,
 };

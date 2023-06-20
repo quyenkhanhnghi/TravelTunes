@@ -26,7 +26,7 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
-      enum: ['easy', 'medium', 'difficulty'],
+      enum: ['easy', 'medium', 'difficult'],
     },
     ratingsAverage: {
       type: Number,
@@ -112,12 +112,15 @@ const tourSchema = new mongoose.Schema(
 //   },
 // });
 
-// virtual properties
+// index
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+// Virtual properties for duration of week
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-// virtual populate for reviews
+// Virtual populate for reviews
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
@@ -156,7 +159,7 @@ tourSchema.pre(/^find/, function (next) {
 //   next();
 // });
 
-// AGGEGRATION MIDDLEWARE
+// AGGEGRATION MIDDLEWARE for secret tour
 tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { scretTour: { $ne: true } } });
   next();

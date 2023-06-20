@@ -63,6 +63,12 @@ userSchema.pre('save', function (next) {
  * Harsh password for the current user
  */
 userSchema.pre('save', async function (next) {
+  // Set the environment variable to turn off password encryption
+  // when import data from json file
+  if (process.env.NODE_ENV === 'LOADER') {
+    this.isNew = true;
+    return next();
+  }
   // only run this func if the password is modified
   if (!this.isModified('password')) {
     return next();
