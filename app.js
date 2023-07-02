@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -9,9 +10,19 @@ const AppError = require('./utils/AppError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const globalErrorHandler = require('./controllers/errorController');
+const cors = require('cors');
 
 const app = express();
+
+// Using pug templates
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serving static file
+app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(`${__dirname}/public`));
 
 // Security HTTP headers
 app.use(helmet());
@@ -20,6 +31,8 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+app.use(cors());
 
 // Limit requests from same API
 const limiter = rateLimit({
@@ -52,9 +65,6 @@ app.use(
   })
 );
 
-// Serving static file
-app.use(express.static(`${__dirname}/public`));
-
 // 2 routes middleware
 // Test middleware
 app.use((req, res, next) => {
@@ -64,6 +74,7 @@ app.use((req, res, next) => {
 
 // 3 routes
 // Body parses, reading body into req.body
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

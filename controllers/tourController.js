@@ -40,24 +40,26 @@ const getAllTours = factory.getAll(Tour);
 const createTour = factory.createOne(Tour);
 
 /**
- * Get a tour based on the Id
- * Parse the populate object into factory function
+ * Get a tour based on the slug name
+ * Parse the populate object into factory function / consider again
  */
-const getTour = factory.getOne(Tour, { path: 'reviews' });
-// const getTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findById(req.params.id).populate('reviews');
-//   // same:
-//   // Tour.findById({ _id: req.params.id })
-//   if (!tour) {
-//     return next(new AppError('Tour not found', 404));
-//   }
-//   res.status(200).json({
-//     status: 'success',
-//     data: {
-//       tour,
-//     },
-//   });
-// });
+// const getTour = factory.getOne(Tour, { path: 'reviews' });
+const getTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findOne({ slug: req.params.slug }).populate(
+    'reviews'
+  );
+  // same:
+  // Tour.findById({ _id: req.params.id })
+  if (!tour) {
+    return next(new AppError('Tour not found', 404));
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
 
 /**
  * Update a tour based on the id of the parameter
@@ -144,6 +146,65 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
     },
   });
 });
+/**
+ * Get Tour within the radius of the center
+ */
+// /tour-within/233/center/-10,45/unit/mi
+const getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  if (!lat || !lng) {
+    return next(AppError('Please provide latitude and longitude'), 400);
+  }
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    length: tours.length,
+    data: tours,
+  });
+});
+
+const getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng) {
+    return next(AppError('Please provide latitude and longitude'), 400);
+  }
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        distance: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: distances,
+    },
+  });
+});
 
 module.exports = {
   aliasTopTour,
@@ -154,4 +215,6 @@ module.exports = {
   deleteTour,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
+  getDistances,
 };
