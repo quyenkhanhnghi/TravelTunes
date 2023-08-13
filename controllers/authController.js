@@ -5,33 +5,79 @@ const AppError = require('../utils/AppError');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
+const { CLIENT_RENEG_LIMIT } = require('tls');
 
-const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRATION,
+const signAccessToken = (userId, role) =>
+  jwt.sign({ userId, role }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
   });
 
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  user.password = undefined;
+const createSendToken = async (user, statusCode, res) => {
+  const accessToken = signAccessToken(user._id, user.role);
+  const userId = user._id;
+  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '1d',
+  });
+  user.refreshToken = refreshToken;
+
+  // NOT to run the validator for confirmPassword
+  await user.save({ validateModifiedOnly: true });
+
   const cookieOption = {
+    path: '/',
     expires: new Date(
       Date.now() + process.env.COOKIE_EXPIRATION * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
+    secure: true,
+    sameSite: 'none',
   };
   if (process.env.NODE_ENV === 'production') {
     cookieOption.secure = true;
   }
-  res.cookie('jwt', token, cookieOption);
+  // SEt access token into header so we can access the protect middeware in authcontroller
+  // TODO: check if it work in frontend
+  res.setHeader('Authorization', 'Bearer ' + accessToken);
+  res.cookie('jwt', refreshToken, cookieOption);
   res.status(statusCode).json({
     status: 'success',
-    token,
+    accessToken,
     data: {
       user,
     },
   });
 };
+
+const refreshToken = catchAsync(async (req, res, next) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return next(new AppError('Unauthorized', 401));
+  const refreshToken = cookies.jwt;
+  const foundUser = await User.findOne({ refreshToken }).exec();
+  if (!foundUser) return next(new AppError('Forbidden', 403));
+
+  // Evaluate the refresh token
+  const decodeToken = await promisify(jwt.verify)(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECRET
+  );
+
+  // Check if user still exits
+  const currentUser = await User.findById(decodeToken.userId).exec();
+  if (!currentUser) {
+    return next(
+      new AppError('The token for this user does no longer exit', 401)
+    );
+  }
+  // Sign new access token
+  const accessToken = signAccessToken(currentUser._id, currentUser.role);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: currentUser,
+      accessToken,
+    },
+  });
+});
 const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -41,15 +87,6 @@ const signUp = catchAsync(async (req, res, next) => {
     passwordChangedAt: req.body.passwordChangedAt,
   });
   createSendToken(newUser, 201, res);
-  // const token = signToken(newUser._id);
-  // res.status(201).json({
-  //   status: 'success',
-  //   token,
-  //   data: {
-  //     user: newUser,
-  //   },
-  // });
-  // next();
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -61,35 +98,36 @@ const login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.checkPassword(password))) {
     return next(new AppError('Invalid email or password', 401));
   }
-  createSendToken(user, 200, res);
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
+  // Exclude the password
+  const currentUser = await User.findOne({ email });
+  createSendToken(currentUser, 200, res);
 });
+
+//TODO: cannot use in backend due to login not set the bearer token - set in frontend
 
 const protect = catchAsync(async (req, res, next) => {
   // 1. check token exits
+  const authHeader = req.headers.authorization || req.headers.Authorization;
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.jwt && req.cookies.jwt !== 'loggedout') {
-    token = req.cookies.jwt;
+  if (authHeader && authHeader.startsWith('Bearer')) {
+    token = authHeader.split(' ')[1];
+    //TODO: check again the situtation when front end have invalid beared but still have token
+    // if (req.cookies.jwt && req.cookies.jwt !== 'loggedout') {
+    //   token = req.cookies.jwt;
   }
+
   if (!token) {
     return next(new AppError('Please log in to access.', 401));
   }
   // 2. Verify token
   const decodeToken = await promisify(jwt.verify)(
     token,
-    process.env.JWT_SECRET_KEY
+    process.env.ACCESS_TOKEN_SECRET
   );
+  console.log(decodeToken);
+
   // 3. Check if user still exits
-  const currentUser = await User.findById(decodeToken.id);
+  const currentUser = await User.findById(decodeToken.userId);
   if (!currentUser) {
     return next(
       new AppError('The token for this user does no longer exit', 401)
@@ -101,9 +139,8 @@ const protect = catchAsync(async (req, res, next) => {
       new AppError('User has changed their password. Please log in again', 401)
     );
   }
-  // Grant access too protected route
+  // Grant access to protected route
   req.user = currentUser;
-  console.log(req.user);
   next();
 });
 
@@ -166,7 +203,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
   });
   // 2. If token has not expired and have a user then set new password
   if (!user) {
-    return next(new AppError('Token is invalid or has expired'), 400);
+    return next(new AppError('Token is invalid or has expired', 400));
   }
   user.password = req.body.password;
   user.confirmPassword = req.body.confirmPassword;
@@ -191,26 +228,47 @@ const resetPassword = catchAsync(async (req, res, next) => {
 const updateMyPassword = catchAsync(async (req, res, next) => {
   // 1. Get user from database
   const user = await User.findById(req.user.id).select('+password');
+
   // 2. Check if post current password is correct
   if (!(await user.checkPassword(req.body.currentPassword))) {
-    return next(new AppError('Invalid password'), 400);
+    return next(new AppError('Invalid password', 400));
   }
   // 3. If yes, update password
-  console.log(user.passwordChangedAt);
   user.password = req.body.newPassword;
   user.confirmPassword = req.body.confirmNewPassword;
   await user.save();
-  console.log(user.passwordChangedAt);
   // CANNOT use a findbyIDandUpdate. confirmPassword not run for update
   // 4. Log in user. Send JWT token
   createSendToken(user, 200, res);
 });
+/**
+ * Handle sign out
+ */
+const signOut = catchAsync(async (req, res, next) => {
+  const cookie = req.cookies;
+  if (!cookie?.jwt) return next(new AppError('No content', 204));
+
+  const refreshToken = cookie.jwt;
+  const foundUser = await User.findOne({ refreshToken }).exec();
+  if (!foundUser) {
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+    return next(new AppError('No content', 204));
+  }
+  foundUser.refreshToken = '';
+  const result = await foundUser.save({ validateModifiedOnly: true });
+  console.log(result);
+
+  res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+  return next(new AppError('No content', 204));
+});
 module.exports = {
   signUp,
   login,
+  refreshToken,
   protect,
   restricTo,
   forgotPassword,
   resetPassword,
   updateMyPassword,
+  signOut,
 };

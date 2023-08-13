@@ -6,17 +6,20 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const AppError = require('./utils/AppError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 const globalErrorHandler = require('./controllers/errorController');
-const cors = require('cors');
+const { credentials, corsOptions } = require('./utils/credentials');
 
 const app = express();
 
-// Using pug templates
+// Using pug templates - no more use
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -27,16 +30,45 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Security HTTP headers
 app.use(helmet());
 
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   res.header(
+//     'Access-Control-Allow-Headers',
+//     'Origin, X-Requested-With, Content-Type, Accept'
+//   );
+//   next();
+// });
+
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:5173');
+//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type');
+//   next();
+// });
+
+// app.use(cors({ credentials: true, origin: 'http://127.0.0.1:5173/' }));
+
+// Handle options credentials check - before CORS!
+// and fetch cookies credentials requirement
+app.use(credentials);
+
+// Cross Origin Resource Sharing
+app.use(cors(corsOptions));
+
+// Use the cookie-parser middleware
+app.use(cookieParser());
+
 // Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(cors());
+// app.use(cors());
 
 // Limit requests from same API
 const limiter = rateLimit({
-  max: 100,
+  max: 600,
   windowMs: 60 * 60 * 1000,
   message: 'Too monay request. Please try again in an hour !',
 });
@@ -78,6 +110,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 app.all('*', (req, res, next) => {
   // res.status(404).json({

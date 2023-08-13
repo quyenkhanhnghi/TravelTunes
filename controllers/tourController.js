@@ -45,9 +45,10 @@ const createTour = factory.createOne(Tour);
  */
 // const getTour = factory.getOne(Tour, { path: 'reviews' });
 const getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findOne({ slug: req.params.slug }).populate(
-    'reviews'
-  );
+  const tour = await Tour.findOne({ slug: req.params.slug }).populate({
+    path: 'reviews',
+    select: 'review users rating',
+  });
   // same:
   // Tour.findById({ _id: req.params.id })
   if (!tour) {
@@ -55,9 +56,7 @@ const getTour = catchAsync(async (req, res, next) => {
   }
   res.status(200).json({
     status: 'success',
-    data: {
-      tour,
-    },
+    data: tour,
   });
 });
 

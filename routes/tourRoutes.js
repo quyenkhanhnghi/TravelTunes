@@ -32,6 +32,8 @@ tourRouter
 tourRouter.route('/distances/:latlng/unit/:unit').get(getDistances);
 tourRouter.route('/').get(getAllTours).post(createTour);
 
-tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+tourRouter.route('/:slug').get(protect, getTour);
+
+tourRouter.route('/:id').patch(updateTour).delete(deleteTour);
 
 module.exports = tourRouter;
