@@ -6,20 +6,22 @@ Travel Tunes is a web-based marketplace built using the MERN stack.
 The platform allows consumers to research, review and book travel products and services directly with travel suppliers. 
 
 The project is currently in progress, with a focus on 
-  - desgining API & RESTfulAPI using CRUD operations with Moogosh
-  - refactoring the Model-View-Controller (MVC) architecture
-  - connecting a hosted database in MongoDB with the Express app.
-
-In the future, the project will be updated with
+  - Desgining API & RESTfulAPI using CRUD operations with Moogosh
+  - Refactoring the Model-View-Controller (MVC) architecture
+  - Connecting a hosted database in MongoDB with the Express app.
   - Error Handling with Express
   - Authentication, Authorization and Security
   - Server-Side Rendering
-  - Advanced Features: Payment, Email and File Uploads
+  - Advanced Features: Payment Integration with Stripe, and File Uploads
+  - Incorporated TypeScript with React to provide a more robust and type-safe user interface. 
+
+In the future, the project will be updated with
+  - Documentations for API reference & application
+  - Leveraging Amazon S3 for seamless file uploads, ensuring efficient data management and storage
+  - Deploying application to AWS
 
 
-
-
-## API Reference - still updated for users
+## API Reference - still updated for users & reviews & bookings
 
 #### Get all tours
 
