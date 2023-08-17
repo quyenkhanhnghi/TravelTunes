@@ -15,6 +15,7 @@ const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const globalErrorHandler = require('./controllers/errorController');
+const bookingController = require('./controllers/bookingController');
 const { credentials, corsOptions } = require('./utils/credentials');
 
 const app = express();
@@ -73,6 +74,13 @@ const limiter = rateLimit({
   message: 'Too monay request. Please try again in an hour !',
 });
 app.use(limiter);
+
+// Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 // Limit the body data size
 app.use(express.json({ limit: '10kb' }));

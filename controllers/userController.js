@@ -1,10 +1,11 @@
 const multer = require('multer');
 const sharp = require('sharp');
+const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
+const Booking = require('../models/bookingModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
-const Booking = require('../models/bookingModel');
 
 const ObjectField = (obj, ...allowedFields) => {
   const newObj = {};
@@ -75,6 +76,15 @@ const getMe = (req, res, next) => {
  */
 const getMyBookings = catchAsync(async (req, res, next) => {
   // 1. Get all the booking
+  const bookings = await Booking.find({ user: req.user.id });
+  // 2. Find all tour with the booking id
+  const tourIDs = await bookings.map((el) => el.tour._id);
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+  res.status(200).json({
+    status: 'success',
+    length: tours.length,
+    data: tours,
+  });
 });
 /**
  * Configure multer storage - save to memory
