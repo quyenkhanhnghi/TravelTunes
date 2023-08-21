@@ -8,6 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 /node_modules
+/.gitignore
+/.prettierrc
+/.eslintrc.cjs
 /public
 dist
 dist-ssr
