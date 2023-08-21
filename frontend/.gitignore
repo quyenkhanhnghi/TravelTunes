@@ -8,14 +8,14 @@ pnpm-debug.log*
 lerna-debug.log*
 
 /node_modules
-/.gitignore
-/.prettierrc
-/.eslintrc.cjs
 /public
 dist
 dist-ssr
 *.local
 *.env
+*.gitignore
+*.eslintrc.cjs
+*.prettierrc
 
 # Editor directories and files
 .vscode/*
