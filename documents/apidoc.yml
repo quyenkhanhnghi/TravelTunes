@@ -1,0 +1,412 @@
+swagger: "2.0"
+info:
+  title: "Travel Tunes API"
+  description: "API documentation for the Travel Tunes application"
+  version: "1.0.0"
+  contact:
+    name: Nghi Quyen
+    email: nghi.quyen@tuni.fi
+basePath: "/api/v1"
+tags:
+  - name: "Tours"
+    description: "API endpoints related to tours"
+  - name: "Users"
+    description: "API endpoints related to users"
+  - name: "Reviews"
+    description: "API endpoints related to reviews"
+  - name: "Bookings"
+    description: "API endpoints related to bookings"
+
+paths:
+  # TOURS
+  /tours:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get all tours"
+      responses:
+        200:
+          description: "Success"
+    post:
+      tags:
+        - "Tours"
+      summary: "Create a new tour"
+      responses:
+        201:
+          description: "Tour created"
+  /tours/{slug}:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get a tour by slug"
+      parameters:
+        - name: "slug"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Slug of the tour"
+      responses:
+        200:
+          description: "Success"
+  /tours/{id}:
+    patch:
+      tags:
+        - "Tours"
+      summary: "Update a tour by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the tour"
+      responses:
+        200:
+          description: "Tour updated"
+    delete:
+      tags:
+        - "Tours"
+      summary: "Delete a tour by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the tour"
+      responses:
+        204:
+          description: "Tour deleted"
+  /tours/{tourId}/reviews:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get reviews for a tour"
+      parameters:
+        - name: "tourId"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the tour"
+      responses:
+        200:
+          description: "Success"
+        404:
+          description: "Tour not found"
+  /tours/top-5-cheap:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get top 5 cheap tours"
+      responses:
+        200:
+          description: "Success"
+  /tours/tour-stats:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get tour statistics"
+      responses:
+        200:
+          description: "Success"
+  /tours/monthly-plan/{year}:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get monthly plan for a year"
+      parameters:
+        - name: "year"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Year for which to get the plan"
+      responses:
+        200:
+          description: "Success"
+  /tours/tours-within/{distance}/center/{latlng}/unit/{unit}:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get tours within a certain distance"
+      parameters:
+        - name: "distance"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Distance in kilometers"
+        - name: "latlng"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Latitude and longitude in format 'lat,lng'"
+        - name: "unit"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Unit of distance ('mi' or 'km')"
+      responses:
+        200:
+          description: "Success"
+  /tours/distances/{latlng}/unit/{unit}:
+    get:
+      tags:
+        - "Tours"
+      summary: "Get distances from a certain point"
+      parameters:
+        - name: "latlng"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Latitude and longitude in format 'lat,lng'"
+        - name: "unit"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Unit of distance ('mi' or 'km')"
+      responses:
+        200:
+          description: "Success"
+  
+  # USERS
+  # ... (Previous YAML content)
+
+# Users
+  /users/signup:
+    post:
+      tags:
+        - "Users"
+      summary: "User signup"
+      responses:
+        200:
+          description: "User signed up"
+  /users/login:
+    post:
+      tags:
+        - "Users"
+      summary: "User login"
+      responses:
+        200:
+          description: "User logged in"
+  /users/refreshToken:
+    get:
+      tags:
+        - "Users"
+      summary: "Refresh user access token"
+      responses:
+        200:
+          description: "Access token refreshed"
+  /users/signout:
+    get:
+      tags:
+        - "Users"
+      summary: "User signout"
+      responses:
+        200:
+          description: "User signed out"
+  /users/forgotPassword:
+    post:
+      tags:
+        - "Users"
+      summary: "Request password reset"
+      responses:
+        200:
+          description: "Password reset email sent"
+  /users/resetPassword/{token}:
+    patch:
+      tags:
+        - "Users"
+      summary: "Reset user password"
+      parameters:
+        - name: "token"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Password reset token"
+      responses:
+        200:
+          description: "Password reset successful"
+  /users/updateMyPassword:
+    patch:
+      tags:
+        - "Users"
+      summary: "Update user's own password"
+      responses:
+        200:
+          description: "Password updated"
+  /users/getMe:
+    get:
+      tags:
+        - "Users"
+      summary: "Get current user's profile"
+      responses:
+        200:
+          description: "Success"
+  /users/getMyTour:
+    get:
+      tags:
+        - "Users"
+      summary: "Get tours associated with the current user"
+      responses:
+        200:
+          description: "Success"
+  /users/updateMe:
+    patch:
+      tags:
+        - "Users"
+      summary: "Update current user's profile"
+      responses:
+        200:
+          description: "Profile updated"
+  /users/deleteMe:
+    patch:
+      tags:
+        - "Users"
+      summary: "Delete current user's account"
+      responses:
+        204:
+          description: "Account deleted"
+  /users:
+    get:
+      tags:
+        - "Users"
+      summary: "Get all users"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+      responses:
+        200:
+          description: "Success"
+    post:
+      tags:
+        - "Users"
+      summary: "Create a new user"
+      responses:
+        201:
+          description: "User created"
+  /users/{id}:
+    get:
+      tags:
+        - "Users"
+      summary: "Get a user by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the user"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+      responses:
+        200:
+          description: "Success"
+    patch:
+      tags:
+        - "Users"
+      summary: "Update a user by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the user"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+      responses:
+        200:
+          description: "User updated"
+    delete:
+      tags:
+        - "Users"
+      summary: "Delete a user by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the user"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+      responses:
+        204:
+          description: "User deleted"
+
+# REVIEWS
+  /reviews:
+    get:
+      tags:
+        - "Reviews"
+      summary: "Get all reviews"
+      responses:
+        200:
+          description: "Success"
+    post:
+      tags:
+        - "Reviews"
+      summary: "Create a new review"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+        - UserRole: ['user', 'admin']  # Specify user roles requirement
+      responses:
+        201:
+          description: "Review created"
+  /reviews/{id}:
+    get:
+      tags:
+        - "Reviews"
+      summary: "Get a review by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the review"
+      responses:
+        200:
+          description: "Success"
+    patch:
+      tags:
+        - "Reviews"
+      summary: "Update a review by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the review"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+        - UserRole: ['user', 'admin']  # Specify user roles requirement
+      responses:
+        200:
+          description: "Review updated"
+    delete:
+      tags:
+        - "Reviews"
+      summary: "Delete a review by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "ID of the review"
+      security:
+        - BearerAuth: []   # Specify authentication requirement
+        - UserRole: ['user', 'admin']  # Specify user roles requirement
+      responses:
+        204:
+          description: "Review deleted"
+
+# BOOKINGS
+  /bookings/checkout/{tourSlug}:
+    get:
+      tags:
+        - "Bookings"
+      summary: "Checkout for booking"
+      parameters:
+        - name: "tourSlug"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Slug of the tour"
+      security:
+        - BearerAuth: []  # Specify authentication requirement
+      responses:
+        200:
+          description: "Checkout initiated"
