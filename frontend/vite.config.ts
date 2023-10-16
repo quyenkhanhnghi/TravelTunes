@@ -5,7 +5,12 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: ['@emotion/react', '@mui/styled-engine', '@emotion/cache'],
+    include: [
+      '@emotion/react',
+      '@mui/styled-engine',
+      '@emotion/cache',
+      '@mui/system',
+    ],
   },
   resolve: {
     alias: {
