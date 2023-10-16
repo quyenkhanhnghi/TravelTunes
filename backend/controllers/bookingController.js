@@ -1,3 +1,4 @@
+const dotenv = require('dotenv');
 const stripe = require('stripe')(process.env.SCRIPT_SECRET_KEY);
 const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
@@ -5,7 +6,8 @@ const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
 
-const domain = process.env.VITE_REACT_APP_BACKEND_URL;
+const domain =
+  'https://travel-tunes-client-quyenkhanhnghi-quyenkhanhnghis-projects.vercel.app';
 
 exports.getCheckout = catchAsync(async (req, res, next) => {
   // 1) Get the currently booked tour

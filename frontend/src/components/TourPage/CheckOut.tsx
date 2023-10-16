@@ -18,13 +18,11 @@ export const CheckOut: React.FC<CheckOutProps> = ({ tourSlug }) => {
     try {
       const res = await checkoutSession(tourSlug);
       const stripe = await stripePromise;
-      console.log(res);
       const { error } = await stripe.redirectToCheckout({
         sessionId: res.data.id,
       });
       if (error) setStripeError(error.message);
     } catch (err) {
-      console.log(err);
       setStripeError(err.message);
     }
     setLoading(false);

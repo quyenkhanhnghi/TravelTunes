@@ -1,0 +1,20 @@
+{
+  "name": "traveltunes",
+  "version": "1.0.0",
+  "description": "Travel Tunes is a web-based marketplace built using the MERN stack.",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "cd frontend && ./node_modules/.bin/vercel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quyenkhanhnghi/TravelTunes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quyenkhanhnghi/TravelTunes/issues"
+  },
+  "homepage": "https://github.com/quyenkhanhnghi/TravelTunes#readme"
+}
