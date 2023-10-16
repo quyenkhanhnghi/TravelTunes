@@ -9,8 +9,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@emotion/react': require.resolve('@emotion/react'),
-      '@mui/styled-engine': require.resolve('@mui/styled-engine'),
+      '@emotion/react': '@emotion/react',
+      '@mui/styled-engine': '@mui/styled-engine',
     },
   },
   build: {
