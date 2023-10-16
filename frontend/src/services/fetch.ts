@@ -1,21 +1,24 @@
 import axios from 'axios';
-// const baseURL = 'http://localhost:3001/api/v1';
+const baseURL = import.meta.env.VITE_REACT_APP_BACKEND_URL;
 
 export const fetchFromApi = async () => {
-  return axios
-    .get('http://localhost:3001/api/v1/tours')
-    .then((res) => res.data);
+  return (
+    axios
+      // .get('http://localhost:3001/api/v1/tours')
+      .get(`${baseURL}api/v1/tours`)
+      .then((res) => res.data)
+  );
 };
 
 export const fetchTourDetail = async (tourSlug: string) => {
   return axios
-    .get(`http://localhost:3001/api/v1/tours/${tourSlug}`)
+    .get(`${baseURL}/api/v1/tours/${tourSlug}`)
     .then((res) => res.data);
 };
 
 // test for fetch axios private with interceptors
 export const axiosPrivate = axios.create({
-  baseURL: `http://localhost:3001/api/v1`,
+  baseURL: `${baseURL}api/v1`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
@@ -23,26 +26,19 @@ export const axiosPrivate = axios.create({
 export const login = async (email: string, password: string) => {
   const data = { email, password };
   const config = { withCredentials: true };
-  const res = await axios.post(
-    'http://localhost:3001/api/v1/users/login',
-    data,
-    config
-  );
+  const res = await axios.post(`${baseURL}api/v1/users/login`, data, config);
   return res.data;
 };
 
 export const refreshToken = async () => {
-  const res = await axios.get(
-    'http://localhost:3001/api/v1/users/refreshToken',
-    {
-      withCredentials: true,
-    }
-  );
+  const res = await axios.get(`${baseURL}api/v1/users/refreshToken`, {
+    withCredentials: true,
+  });
   return res.data;
 };
 
 export const signOut = async () => {
-  const res = await axios.get('http://localhost:3001/api/v1/users/signout', {
+  const res = await axios.get(`${baseURL}api/v1/users/signout`, {
     withCredentials: true,
   });
   return res.data;
@@ -70,7 +66,7 @@ export const updatePassword = async (
 
 export const checkoutSession = async (tourSlug: string) => {
   const res = await axiosPrivate.get(
-    `http://localhost:3001/api/v1/bookings/checkout/${tourSlug}`
+    `${baseURL}api/v1/bookings/checkout/${tourSlug}`
   );
   return res.data;
 };

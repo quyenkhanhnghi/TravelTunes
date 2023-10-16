@@ -7,9 +7,10 @@ interface CheckOutProps {
 }
 
 export const CheckOut: React.FC<CheckOutProps> = ({ tourSlug }) => {
-  const stripePromise = loadStripe(
-    'pk_test_51NdC5EHCvtfDFvkAkxHMrlR9m6k4aql9MGOz9q3sZYDVTk7s8IVESGgVN1roxMJTSAWohsTEzcOsycx4Jw89Bh1E00oldyCqyA'
-  );
+  // const stripePromise = loadStripe(
+  //   'pk_test_51NdC5EHCvtfDFvkAkxHMrlR9m6k4aql9MGOz9q3sZYDVTk7s8IVESGgVN1roxMJTSAWohsTEzcOsycx4Jw89Bh1E00oldyCqyA'
+  // );
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
   const [stripeError, setStripeError] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const handleCheckOut = async () => {

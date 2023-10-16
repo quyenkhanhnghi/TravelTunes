@@ -3,16 +3,13 @@ import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 
 export const useRefreshToken = () => {
-  // const { dispatch } = React.useContext(AuthContext) as ContextType;
+  const baseURL = import.meta.env.VITE_REACT_APP_BACKEND_URL;
   const { dispatchAuth } = useAuth() as ContextType;
 
   const refresh = async () => {
-    const response = await axios.get(
-      'http://localhost:3001/api/v1/users/refreshToken',
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.get(`${baseURL}api/v1/users/refreshToken`, {
+      withCredentials: true,
+    });
 
     dispatchAuth({
       type: 'updateAcessToken',
