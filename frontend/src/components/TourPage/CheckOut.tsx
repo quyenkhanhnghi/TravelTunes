@@ -21,7 +21,6 @@ export const CheckOut: React.FC<CheckOutProps> = ({ tourSlug }) => {
       const { error } = await stripe.redirectToCheckout({
         sessionId: res.data.id,
       });
-      cgl;
       if (error) setStripeError(error.message);
     } catch (err) {
       console.log(err);

@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
@@ -12,7 +12,6 @@ const AppError = require('./utils/AppError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
-// const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 const bookingController = require('./controllers/bookingController');
@@ -20,16 +19,66 @@ const { credentials, corsOptions } = require('./utils/credentials');
 
 const app = express();
 
-// Using pug templates - no more use
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
-
 // Serving static file
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('dist'));
+// app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(`${__dirname}/public`));
 
 // Security HTTP headers
-app.use(helmet());
+// app.use(helmet());
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       connectSrc: [
+//         'self',
+//         'https://api.stripe.com',
+//         'https://checkout.stripe.com',
+//         'https://api.mapbox.com',
+//         'https://events.mapbox.com',
+//       ],
+//       defaultSrc: [
+//         'self',
+//         'https://*.mapbox.com',
+//         'unsafe-inline',
+//         'https://js.stripe.com',
+//       ],
+//       frameSrc: [
+//         'self',
+//         'https://js.stripe.com',
+//         'https://checkout.stripe.com',
+//       ],
+//       scriptSrc: [
+//         'self',
+//         'https://js.stripe.com',
+//         'https://checkout.stripe.com',
+//       ],
+//       imgSrc: ['self', 'https://*.mapbox.com', 'data:', 'https://*.stripe.com'],
+//       styleSrc: ['self', 'https://*.mapbox.com', "'unsafe-inline'"],
+//       fontSrc: ['self', 'https://*.mapbox.com'],
+//       workerSrc: ['self', 'blob:'], // Allow web workers from blob URLs
+//     },
+//   })
+// );
+
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: [
+//         "'self'",
+//         'blob:',
+//         'https://*.mapbox.com',
+//         'https://js.stripe.com',
+//       ],
+//       scriptSrc: [
+//         "'self'",
+//         'https://*.mapbox.com',
+//         'https://js.stripe.com',
+//         "'unsafe-inline'",
+//         'blob:',
+//       ],
+//     },
+//   })
+// );
 
 // app.use((req, res, next) => {
 //   res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
@@ -64,8 +113,6 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-
-// app.use(cors());
 
 // Limit requests from same API
 const limiter = rateLimit({
@@ -119,6 +166,10 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 app.all('*', (req, res, next) => {
   // res.status(404).json({

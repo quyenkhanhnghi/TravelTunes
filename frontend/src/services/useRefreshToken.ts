@@ -1,7 +1,5 @@
-import React from 'react';
-import { AuthContext, ContextType } from '../context/Provider/AuthProvider';
+import { ContextType } from '../context/Provider/AuthProvider';
 import axios from 'axios';
-import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 export const useRefreshToken = () => {

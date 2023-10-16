@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { login } from '../../services/fetch';
 import { default as errorLogo } from './error-login.svg';
-import { AuthContext, ContextType } from '../../context/Provider/AuthProvider';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ContextType } from '../../context/Provider/AuthProvider';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
 interface LoginProps {}
@@ -96,7 +96,7 @@ export const Login: React.FC<LoginProps> = ({}) => {
               value={password}
               onChange={handlePasswordChange}
               required
-              minLength='8'
+              minLength={8}
             />
           </div>
           {error && (

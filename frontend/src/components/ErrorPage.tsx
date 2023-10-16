@@ -1,10 +1,8 @@
 import React from 'react';
-import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { useRouteError } from 'react-router-dom';
 
-interface ErrorPageProps {}
-
-export const ErrorPage: React.FC<ErrorPageProps> = ({}) => {
-  let error = useRouteError();
+export const ErrorPage: React.FC = () => {
+  const error = useRouteError();
   console.log(error);
   return (
     <main className='main'>

@@ -5,7 +5,7 @@ const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
 
-const domain = 'http://localhost:5173';
+const domain = `http://localhost:3001/api/v1`;
 
 exports.getCheckout = catchAsync(async (req, res, next) => {
   // 1) Get the currently booked tour

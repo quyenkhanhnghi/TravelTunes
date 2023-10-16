@@ -3,11 +3,12 @@ import './css/style.css';
 
 import {
   Outlet,
-  Route,
-  RouterProvider,
   createBrowserRouter,
+  RouterProvider,
   createRoutesFromElements,
+  Route,
 } from 'react-router-dom';
+
 import { Overview } from './components/OverviewPage/Overview';
 import { TourDetail } from './components/TourPage/TourDetail';
 import { fetchFromApi } from './services/fetch';
@@ -33,8 +34,6 @@ const Layout: React.FC = () => {
     </>
   );
 };
-
-interface AppProps {}
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -86,6 +85,7 @@ const router = createBrowserRouter(
 //             element: (
 //               <RequiredAuth allowedRoles={['admin', 'user', 'lead-guide']} />
 //             ),
+
 //             children: [
 //               {
 //                 path: 'tours/:tourSlug',
@@ -105,7 +105,7 @@ const router = createBrowserRouter(
 //   },
 // ]);
 
-export const App: React.FC<AppProps> = ({}) => {
+export const App: React.FC = () => {
   return (
     // <UserContext.Provider value={{ state, dispatch }}>
     //   <RouterProvider router={router} />;

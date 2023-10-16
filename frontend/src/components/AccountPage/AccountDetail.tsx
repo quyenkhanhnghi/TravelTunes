@@ -16,9 +16,7 @@ import {
 } from './AccountForm';
 import UploadIcon from '@mui/icons-material/Upload';
 
-interface AccountDetailProps {}
-
-export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
+export const AccountDetail: React.FC = () => {
   const { auth, dispatchAuth } = useAuth() as ContextType;
   const user = auth.user;
   // handle input form
@@ -28,7 +26,10 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
     useState<PasswordFormType>(defaultPasswordForm);
   // handle drag events
   const [dragActive, setDragActive] = useState(false);
-  const handleDrag = function (e: React.DragEvent<HTMLFormElement>) {
+
+  // TODO: fix type properly!
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleDrag = function (e: any) {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === 'dragenter' || e.type === 'dragover') {
@@ -88,7 +89,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
     return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
   });
   const handleAlertClose = (
-    event: React.SyntheticEvent | Event,
+    _event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === 'clickaway') {
@@ -288,7 +289,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
-                  ></div>
+                  />
                 )}
                 {/* <a className='btn-text' href=''>
                   Choose new photo
@@ -344,7 +345,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
                   onChange={handlePasswordChange}
                   placeholder='••••••••'
                   required
-                  minLength='8'
+                  minLength={8}
                 />
               </div>
               <div className='form__group'>
@@ -360,7 +361,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
                   onChange={handlePasswordChange}
                   placeholder='••••••••'
                   required
-                  minLength='8'
+                  minLength={8}
                 />
               </div>
               <div className='form__group ma-bt-lg'>
@@ -376,7 +377,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({}) => {
                   onChange={handlePasswordChange}
                   placeholder='••••••••'
                   required
-                  minLength='8'
+                  minLength={8}
                 />
               </div>
               <div className='form__group right'>

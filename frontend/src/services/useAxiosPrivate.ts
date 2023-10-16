@@ -48,11 +48,10 @@ export const useAxiosPrivate = () => {
       }
     );
     return () => {
-      return () => {
-        axiosPrivate.interceptors.request.eject(requestIntercept);
-        axiosPrivate.interceptors.response.eject(responseIntercept);
-      };
+      axiosPrivate.interceptors.request.eject(requestIntercept);
+      axiosPrivate.interceptors.response.eject(responseIntercept);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth, refresh]);
 
   return axiosPrivate;

@@ -10,7 +10,7 @@ export type CardDataType = {
   difficulty: string;
   summary: string;
   locations: string;
-  startLocation: string;
+  startLocation: { description: string };
   startDates: string;
   maxGroupSize: number;
   price: number;

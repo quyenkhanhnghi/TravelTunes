@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { ContextType } from '../../context/Provider/AuthProvider';
+import useAuth from '../../hooks/useAuth';
+import { useAxiosPrivate } from '../../services/useAxiosPrivate';
 import { BoxTourDetail } from './BoxTourDetail';
+import { CheckOut } from './CheckOut';
 import { MapBox } from './MapBox';
 import { PictureBox } from './PictureBox';
 import { ReviewCard } from './ReviewCard';
 import { TourGuide } from './TourGuide';
-import { useAxiosPrivate } from '../../services/useAxiosPrivate';
-import useAuth from '../../hooks/useAuth';
-import { ContextType } from '../../context/Provider/AuthProvider';
-import { CheckOut } from './CheckOut';
 
 export type ReviewCardType = {
   user: {
@@ -50,9 +50,8 @@ export type dataType = {
 };
 
 // Main FC for Tour Detail Page
-interface TourDetailProps {}
 
-export const TourDetail: React.FC<TourDetailProps> = () => {
+export const TourDetail: React.FC = () => {
   const { tourSlug } = useParams();
   const [data, setTour] = useState<dataType>();
   const axiosPrivate = useAxiosPrivate();
@@ -99,12 +98,17 @@ export const TourDetail: React.FC<TourDetailProps> = () => {
     <>
       <HelmetProvider>
         <Helmet>
+          {/* <meta
+            http-equiv='Content-Security-Policy'
+            content="default-src 'self' https://*.mapbox.com ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src https://cdnjs.cloudflare.com https://api.mapbox.com 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+          /> */}
+
           <title>{data.name} Tour </title>
           <link
             href='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css'
             rel='stylesheet'
           />
-          {/* <script src='../mapBox.ts' defer={true}></script> */}
+          <script src='../mapBox.ts' defer={true}></script>
         </Helmet>
 
         <section className='section-header'>

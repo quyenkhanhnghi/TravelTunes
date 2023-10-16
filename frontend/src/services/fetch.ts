@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAxiosPrivate } from './useAxiosPrivate';
+// const baseURL = 'http://localhost:3001/api/v1';
 
 export const fetchFromApi = async () => {
   return axios

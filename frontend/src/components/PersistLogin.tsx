@@ -4,12 +4,11 @@ import useAuth from '../hooks/useAuth';
 import { ContextType } from '../context/Provider/AuthProvider';
 import { Outlet } from 'react-router-dom';
 
-interface PersistLoginProps {}
-
-export const PersistLogin: React.FC<PersistLoginProps> = ({}) => {
+export const PersistLogin: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
   const { auth } = useAuth() as ContextType;
+
   useEffect(() => {
     const verifyRefreshToken = async () => {
       try {
@@ -21,10 +20,12 @@ export const PersistLogin: React.FC<PersistLoginProps> = ({}) => {
       }
     };
     !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
-  });
-  useEffect(() => {
-    console.log(`isLoading: ${isLoading}`),
-      console.log(`Access token: ${auth.accessToken}`);
-  }, [isLoading]);
+  }, [auth.accessToken, refresh]);
+
+  // useEffect(() => {
+  //   console.log(`isLoading: ${isLoading}`),
+  //     console.log(`Access token: ${auth.accessToken}`);
+  // }, [isLoading]);
+
   return <>{isLoading ? <p>Loading...</p> : <Outlet />}</>;
 };

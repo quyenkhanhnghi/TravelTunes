@@ -4,9 +4,7 @@ import { ContextType } from '../context/Provider/AuthProvider';
 import useAuth from '../hooks/useAuth';
 import useLogout from '../hooks/useLogOut';
 
-interface NavbarProps {}
-
-export const Navbar: React.FC<NavbarProps> = () => {
+export const Navbar: React.FC = () => {
   // const [user, setUser] = useState('');
   // useEffect(() => {
   //   // Check login status when the component loads

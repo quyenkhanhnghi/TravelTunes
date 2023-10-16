@@ -1,12 +1,11 @@
-import { useEffect } from 'react';
 import { ContextType } from '../context/Provider/AuthProvider';
 import { signOut } from '../services/fetch';
 import useAuth from './useAuth';
-import { useAxiosPrivate } from '../services/useAxiosPrivate';
+// import { useAxiosPrivate } from '../services/useAxiosPrivate';
 
 const useLogout = () => {
-  const { auth, dispatchAuth } = useAuth() as ContextType;
-  const axiosPrivate = useAxiosPrivate();
+  const { dispatchAuth } = useAuth() as ContextType;
+  // const axiosPrivate = useAxiosPrivate();
   const logout = async () => {
     try {
       await signOut();
