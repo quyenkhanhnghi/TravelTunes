@@ -16,12 +16,12 @@ The project is currently in progress, with a focus on
   - Incorporated TypeScript with React to provide a more robust and type-safe user interface.
   - Login Authentication with JWT Access, Refresh Tokens, Cookies and Axios
   - Persistent User Login Authentication with JWT Tokens
-  - Documentations for API reference
+  - Documentations for API reference (Swagger file in doc folder)
+  - Deploying application to Vercel
 
 In the future, the project will be updated with
   - Documentations for application
   - Leveraging Amazon S3 for seamless file uploads, ensuring efficient data management and storage
-  - Deploying application to AWS
 
 
 ## API Reference 
@@ -29,9 +29,10 @@ In the future, the project will be updated with
 - Swagger Document API: attached yml file 
 
 
-## Demo
+## Demo - [click here](https://travel-tunes-client-quyenkhanhnghi-quyenkhanhnghis-projects.vercel.app/)
 
 https://github.com/quyenkhanhnghi/TravelTunes/assets/108847306/3cda3d3a-f601-43e3-8e41-5c597456a930
+
 
 # Reference
 Styling the API documentation with HTML and CSS - based mostly on Jonas Schmedtmann's project: https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/
